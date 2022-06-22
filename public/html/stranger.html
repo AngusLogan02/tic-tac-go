@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>IO</title>
+    <link rel="stylesheet" href="static/css/tw.css">
+  </head>
+  <body class="">
+    <div class="bg-neutral-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center rounded-xl p-2 shadow-lg">
+        <h1 class="text-3xl italic font-semibold text-neutral-100 mb-8 mt-6">one of two players</h1>
+        <form id="test">
+          <input type="text" id="testText" name="testText">
+        </form>
+    </div>
+
+    <div id="particles-js"></div>
+	  <script src="static/js/particles.min.js"></script>
+    <script src="static/js/app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.4/socket.io.min.js" integrity="sha512-qXjK7fRhV6plK/Vpaknn+5Fe0dXhJqdbiQKpLghl0XKir10zEEzSNqheA1MY7nh9H8cu7giAYTibHTBvt37PQg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+      var socket = io("/");
+
+      var form = document.getElementById('test')
+      var input = document.getElementById('testText')
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (input.value) {
+          socket.emit('msg', input.value);
+          input.value = '';
+        }
+      });
+    </script>
+  </body>
+</html>
