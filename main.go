@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	r := gin.Default()
+	r := gin.New()
 	r.SetTrustedProxies(nil)
 
 	io := socketio.NewServer(nil)

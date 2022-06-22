@@ -2,16 +2,16 @@ package ws
 
 import (
 	"log"
+	"strconv"
 
 	socketio "github.com/googollee/go-socket.io"
 )
 
 func HandleOnConnect(io *socketio.Server) {
-	io.OnConnect("/", func(s socketio.Conn) error {
-		s.SetContext("")
-		log.Println("session id:", s.ID())
-		log.Println("current client count:", io.Count())
-
+	io.OnConnect("/stranger", func(s socketio.Conn) error {
+		s.LeaveAll()
+		s.Join("stranger_waiting")
+		log.Println(strconv.Itoa(io.RoomLen("/stranger", "stranger_waiting")) + " strangers waiting")
 		return nil
 	})
 }
@@ -19,12 +19,11 @@ func HandleOnConnect(io *socketio.Server) {
 func HandleOnDisconnect(io *socketio.Server) {
 	io.OnDisconnect("/", func(s socketio.Conn, reason string) {
 		log.Println("disconnect:", reason)
-		log.Println("current client count:", io.Count())
 	})
 }
 
 func HandleMsgEvent(io *socketio.Server) {
-	io.OnEvent("/", "msg", func(s socketio.Conn, msg string) string {
+	io.OnEvent("/stranger", "msg", func(s socketio.Conn, msg string) string {
 		log.Println("message:", msg)
 		s.SetContext(msg)
 		return msg
