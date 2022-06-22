@@ -17,6 +17,7 @@ func main() {
 
 	ws.HandleOnConnect(io)
 	ws.HandleOnDisconnect(io)
+	ws.HandleOnDisconnectStranger(io)
 	ws.HandleMsgEvent(io)
 
 	r.LoadHTMLGlob("public/html/*")

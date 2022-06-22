@@ -17,8 +17,12 @@ func HandleOnConnect(io *socketio.Server) {
 }
 
 func HandleOnDisconnect(io *socketio.Server) {
-	io.OnDisconnect("/", func(s socketio.Conn, reason string) {
-		log.Println("disconnect:", reason)
+	io.OnDisconnect("/", func(s socketio.Conn, reason string) {})
+}
+
+func HandleOnDisconnectStranger(io *socketio.Server) {
+	io.OnDisconnect("/stranger", func(s socketio.Conn, reason string) {
+		log.Println(s.ID(), "disconnected from", s.Namespace(), ":", reason)
 	})
 }
 
