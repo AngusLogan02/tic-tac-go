@@ -2,16 +2,25 @@ package ws
 
 import (
 	"log"
-	"strconv"
 
 	socketio "github.com/googollee/go-socket.io"
 )
 
 func HandleOnConnect(io *socketio.Server) {
 	io.OnConnect("/stranger", func(s socketio.Conn) error {
-		s.LeaveAll()
-		s.Join("stranger_waiting")
-		log.Println(strconv.Itoa(io.RoomLen("/stranger", "stranger_waiting")) + " strangers waiting")
+		s.Leave(s.ID())
+
+		roomFound := false
+		for _, room := range io.Rooms("/stranger") {
+			if io.RoomLen("/stranger", room) == 1 {
+				s.Join(room)
+				roomFound = true
+			}
+		}
+		if roomFound == false {
+			s.Join("game" + s.ID())
+		}
+		log.Println(io.Rooms("/stranger"))
 		return nil
 	})
 }
