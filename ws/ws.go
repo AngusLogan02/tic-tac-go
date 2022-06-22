@@ -15,6 +15,7 @@ func HandleOnConnect(io *socketio.Server) {
 			if io.RoomLen("/stranger", room) == 1 {
 				s.Join(room)
 				roomFound = true
+				io.BroadcastToRoom("/stranger", room, "gameFound", "found")
 			}
 		}
 		if roomFound == false {
