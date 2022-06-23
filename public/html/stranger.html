@@ -7,10 +7,50 @@
     <title>IO</title>
     <link rel="stylesheet" href="static/css/tw.css">
   </head>
-  <body class="">
+  <body class="bg-neutral-800">
     <div id="welcomeContainer" class="bg-neutral-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center rounded-xl p-2 shadow-lg transition-all duration-700">
         <h1 id="counter" class="text-3xl italic font-semibold text-neutral-100 m-6">one of two players</h1>
         <h2 id="startingGame" class="text-xl italic font-semibold text-neutral-100 mb-6 hidden">Starting game</h2>
+    </div>
+
+    <!-- <div id="gameBoard" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-green-500 border-2 w-1/2 after:pb-[100%] place-items-center content-center hidden"> -->
+    <div id="gameBoard" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 grid-rows-3  grid-cols-3 hidden w-3/5 h-4/5">
+      <button id="tl" class="border-neutral-600 border-b-2 border-r-2">
+        <p class="text-9xl text-neutral-100 hidden">O</p>
+        <p class="text-9xl text-neutral-100 hidden">X</p>
+      </button>
+      <button id="tm" class="border-neutral-600 border-b-2 border-r-2">
+        <p class="text-9xl text-neutral-100 hidden">O</p>
+        <p class="text-9xl text-neutral-100 hidden">X</p>
+      </button>
+      <button id="tr" class="border-neutral-600 border-b-2">
+        <p class="text-9xl text-neutral-100 hidden">O</p>
+        <p class="text-9xl text-neutral-100 hidden">X</p>
+      </button>
+      <button id="ml" class="border-neutral-600 border-b-2 border-r-2">
+        <p class="text-9xl text-neutral-100 hidden">O</p>
+        <p class="text-9xl text-neutral-100 hidden">X</p>
+      </button>
+      <button id="mm" class="border-neutral-600 border-b-2 border-r-2">
+        <p class="text-9xl text-neutral-100 hidden">O</p>
+        <p class="text-9xl text-neutral-100 hidden">X</p>
+      </button>
+      <button id="mr" class="border-neutral-600 border-b-2">
+        <p class="text-9xl text-neutral-100 hidden">O</p>
+        <p class="text-9xl text-neutral-100 hidden">X</p>
+      </button>
+      <button id="bl" class="border-neutral-600 border-r-2">
+        <p class="text-9xl text-neutral-100 hidden">O</p>
+        <p class="text-9xl text-neutral-100 hidden">X</p>
+      </button>
+      <button id="bm" class="border-neutral-600 border-r-2">
+        <p class="text-9xl text-neutral-100 hidden">O</p>
+        <p class="text-9xl text-neutral-100 hidden">X</p>
+      </button>
+      <button id="br" class="">
+        <p class="text-9xl text-neutral-100 hidden">O</p>
+        <p class="text-9xl text-neutral-100 hidden">X</p>
+      </button>
     </div>
 
     <div id="particles-js"></div>
@@ -25,15 +65,20 @@
       var playerCounter = document.getElementById('counter')
       var startingGame = document.getElementById('startingGame')
       var welcomeContainer = document.getElementById('welcomeContainer')
+      var particles = document.getElementById('particles-js')
+      var gameBoard = document.getElementById('gameBoard')
 
       socket.on('gameFound', function (status) {
         playerCounter.innerHTML = "two of two players";
         startingGame.style.display = "block";
+        
         setTimeout(function() {
           setTimeout(function() {
             welcomeContainer.remove();
+            particles.remove();
+            gameBoard.style.display = "grid"
           }, 700);
-          welcomeContainer.style.opacity = 0;
+          welcomeContainer.style.opacity = 0; 
         }, 2000);
       });
     </script>
