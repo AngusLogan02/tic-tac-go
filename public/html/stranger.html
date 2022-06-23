@@ -8,8 +8,9 @@
     <link rel="stylesheet" href="static/css/tw.css">
   </head>
   <body class="">
-    <div class="bg-neutral-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center rounded-xl p-2 shadow-lg">
-        <h1 id="counter" class="text-3xl italic font-semibold text-neutral-100 mb-8 mt-6">one of two players</h1>
+    <div id="welcomeContainer" class="bg-neutral-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center rounded-xl p-2 shadow-lg transition-all duration-700">
+        <h1 id="counter" class="text-3xl italic font-semibold text-neutral-100 m-6">one of two players</h1>
+        <h2 id="startingGame" class="text-xl italic font-semibold text-neutral-100 mb-6 hidden">Starting game</h2>
     </div>
 
     <div id="particles-js"></div>
@@ -21,9 +22,19 @@
 
       var form = document.getElementById('test')
       var input = document.getElementById('testText')
+      var playerCounter = document.getElementById('counter')
+      var startingGame = document.getElementById('startingGame')
+      var welcomeContainer = document.getElementById('welcomeContainer')
 
       socket.on('gameFound', function (status) {
-        document.getElementById('counter').innerHTML = "two of two players";
+        playerCounter.innerHTML = "two of two players";
+        startingGame.style.display = "block";
+        setTimeout(function() {
+          setTimeout(function() {
+            welcomeContainer.remove();
+          }, 700);
+          welcomeContainer.style.opacity = 0;
+        }, 2000);
       });
     </script>
   </body>
