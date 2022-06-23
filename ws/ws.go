@@ -2,6 +2,7 @@ package ws
 
 import (
 	"log"
+	"tic-tac-go/game"
 
 	socketio "github.com/googollee/go-socket.io"
 )
@@ -31,15 +32,16 @@ func HandleOnConnect(io *socketio.Server) {
 					}
 				}
 				roomFound = true
-				io.BroadcastToRoom("/stranger", roomName, "gameFound", "found")
+				io.BroadcastToRoom("/stranger", roomName, "gameFound", roomList[roomMap[s.ID()]].player1)
 			}
 		}
 		if roomFound == false {
 			s.Join("game" + s.ID())
 			roomMap[s.ID()] = len(roomList)
 			roomList = append(roomList, room{
-				roomID:  "game" + s.ID(),
-				player1: s.ID(),
+				roomID:    "game" + s.ID(),
+				player1:   s.ID(),
+				gamestate: game.InitialiseGamestate(),
 			})
 		}
 		log.Println(io.Rooms("/stranger"))
@@ -57,18 +59,18 @@ func HandleOnDisconnectStranger(io *socketio.Server) {
 	})
 }
 
-func HandleMsgEvent(io *socketio.Server) {
-	io.OnEvent("/stranger", "msg", func(s socketio.Conn, msg string) string {
-		log.Println("message:", msg)
-		s.SetContext(msg)
-		return msg
-	})
-}
+func HandleMove(io *socketio.Server) {
+	io.OnEvent("/stranger", "move", func(s socketio.Conn, location string) {
+		currGame := roomList[roomMap[s.ID()]]
+		var player string
+		if s.ID() == currGame.player1 {
+			player = "X"
+		} else {
+			player = "O"
+		}
 
-func HandleTestEvent(io *socketio.Server) {
-	io.OnEvent("/stranger", "testEvent", func(s socketio.Conn, sID string) {
-		roomIndex := roomMap[sID]
-		socketRoom := roomList[roomIndex]
-		log.Println("socket id is", sID, "therefore they are in room", socketRoom.roomID)
+		if game.ValidMove(currGame.gamestate, location, player) {
+			io.BroadcastToRoom("/stranger", currGame.roomID, "valid", location+player)
+		}
 	})
 }

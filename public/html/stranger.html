@@ -15,43 +15,44 @@
 
     <!-- <div id="gameBoard" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-green-500 border-2 w-1/2 after:pb-[100%] place-items-center content-center hidden"> -->
     <div id="gameBoard" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 grid-rows-3  grid-cols-3 hidden w-3/5 h-4/5">
-      <button onclick="test()" id="tl" class="border-neutral-600 border-b-2 border-r-2">
-        <p class="text-9xl text-neutral-100 hidden">O</p>
-        <p class="text-9xl text-neutral-100 hidden">X</p>
+      <button onclick="move('00')" id="possMove" class="border-neutral-600 border-b-2 border-r-2" disabled>
+        <p id="00X" class="text-9xl text-neutral-100 hidden">X</p>
+        <p id="00O" class="text-9xl text-neutral-100 hidden">O</p>
       </button>
-      <button id="tm" class="border-neutral-600 border-b-2 border-r-2">
-        <p class="text-9xl text-neutral-100 hidden">O</p>
-        <p class="text-9xl text-neutral-100 hidden">X</p>
+      <button onclick="move('01')" id="possMove" class="border-neutral-600 border-b-2 border-r-2 " disabled>
+        <p id="01X" class="text-9xl text-neutral-100 hidden">X</p>
+        <p id="01O" class="text-9xl text-neutral-100 hidden">O</p>
       </button>
-      <button id="tr" class="border-neutral-600 border-b-2">
-        <p class="text-9xl text-neutral-100 hidden">O</p>
-        <p class="text-9xl text-neutral-100 hidden">X</p>
+      <button onclick="move('02')" id="possMove" class="border-neutral-600 border-b-2" disabled>
+        <p id="02X" class="text-9xl text-neutral-100 hidden">X</p>
+        <p id="02O" class="text-9xl text-neutral-100 hidden">O</p>
       </button>
-      <button id="ml" class="border-neutral-600 border-b-2 border-r-2">
-        <p class="text-9xl text-neutral-100 hidden">O</p>
-        <p class="text-9xl text-neutral-100 hidden">X</p>
+      <button onclick="move('10')" id="possMove" class="border-neutral-600 border-b-2 border-r-2" disabled>
+        <p id="10X" class="text-9xl text-neutral-100 hidden">X</p>
+        <p id="10O" class="text-9xl text-neutral-100 hidden">O</p>
       </button>
-      <button id="mm" class="border-neutral-600 border-b-2 border-r-2">
-        <p class="text-9xl text-neutral-100 hidden">O</p>
-        <p class="text-9xl text-neutral-100 hidden">X</p>
+      <button onclick="move('11')" id="possMove" class="border-neutral-600 border-b-2 border-r-2" disabled>
+        <p id="11X" class="text-9xl text-neutral-100 hidden">X</p>
+        <p id="11O" class="text-9xl text-neutral-100 hidden">O</p>
       </button>
-      <button id="mr" class="border-neutral-600 border-b-2">
-        <p class="text-9xl text-neutral-100 hidden">O</p>
-        <p class="text-9xl text-neutral-100 hidden">X</p>
+      <button onclick="move('12')" id="possMove" class="border-neutral-600 border-b-2" disabled>
+        <p id="12X" class="text-9xl text-neutral-100 hidden">X</p>
+        <p id="12O" class="text-9xl text-neutral-100 hidden">O</p>
       </button>
-      <button id="bl" class="border-neutral-600 border-r-2">
-        <p class="text-9xl text-neutral-100 hidden">O</p>
-        <p class="text-9xl text-neutral-100 hidden">X</p>
+      <button onclick="move('20')" id="possMove" class="border-neutral-600 border-r-2" disabled>
+        <p id="20X" class="text-9xl text-neutral-100 hidden">X</p>
+        <p id="20O" class="text-9xl text-neutral-100 hidden">O</p>
       </button>
-      <button id="bm" class="border-neutral-600 border-r-2">
-        <p class="text-9xl text-neutral-100 hidden">O</p>
-        <p class="text-9xl text-neutral-100 hidden">X</p>
+      <button onclick="move('21')" id="possMove" class="border-neutral-600 border-r-2" disabled>
+        <p id="21X" class="text-9xl text-neutral-100 hidden">X</p>
+        <p id="21O" class="text-9xl text-neutral-100 hidden">O</p>
       </button>
-      <button id="br" class="">
-        <p class="text-9xl text-neutral-100 hidden">O</p>
-        <p class="text-9xl text-neutral-100 hidden">X</p>
+      <button onclick="move('22')" id="possMove" disabled>
+        <p id="22X" class="text-9xl text-neutral-100 hidden">X</p>
+        <p id="22O" class="text-9xl text-neutral-100 hidden">O</p>
       </button>
     </div>
+    <div id="whosMove" class="text-3xl absolute w-full text-center mt-6 text-neutral-100 hidden">opponent's move</div>
 
     <div id="particles-js"></div>
 	  <script src="static/js/particles.min.js"></script>
@@ -67,8 +68,10 @@
       var welcomeContainer = document.getElementById('welcomeContainer')
       var particles = document.getElementById('particles-js')
       var gameBoard = document.getElementById('gameBoard')
+      var possMoves = document.getElementsByTagName('button')
+      var whosMove = document.getElementById('whosMove')
 
-      socket.on('gameFound', function (status) {
+      socket.on('gameFound', function (player1) {
         playerCounter.innerHTML = "two of two players";
         startingGame.style.display = "block";
         
@@ -77,15 +80,36 @@
             welcomeContainer.remove();
             particles.remove();
             gameBoard.style.display = "grid"
+            if (socket.id == player1) {
+              for (var i=0; i < possMoves.length; i++) {
+                possMoves[i].disabled = false;
+              }
+              whosMove.innerHTML = "your move"
+            }
+            whosMove.style.display = "block"
           }, 700);
           welcomeContainer.style.opacity = 0; 
         }, 2000);
       });
 
-      function test() {
-        socket.emit('testEvent', socket.id)
-        console.log("test func ran")
+      function move(location) {
+        socket.emit("move", location);
       }
+
+      socket.on('valid', function(validMove) {
+        document.getElementById(validMove).style.display = "block";
+        if (possMoves[0].disabled == true) {
+          for (var i=0; i < possMoves.length; i++) {
+                possMoves[i].disabled = false;
+          }
+          whosMove.innerHTML = "your move"
+        } else {
+          for (var i=0; i < possMoves.length; i++) {
+                possMoves[i].disabled = true;
+          }
+          whosMove.innerHTML = "opponent's move"
+        }
+      });
     </script>
   </body>
 </html>

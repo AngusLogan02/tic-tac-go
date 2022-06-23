@@ -18,9 +18,7 @@ func main() {
 	ws.HandleOnConnect(io)
 	ws.HandleOnDisconnect(io)
 	ws.HandleOnDisconnectStranger(io)
-	ws.HandleMsgEvent(io)
-
-	ws.HandleTestEvent(io)
+	ws.HandleMove(io)
 
 	r.LoadHTMLGlob("public/html/*")
 	r.Static("/static/css", "./public/css")
