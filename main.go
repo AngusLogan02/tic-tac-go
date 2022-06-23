@@ -20,6 +20,8 @@ func main() {
 	ws.HandleOnDisconnectStranger(io)
 	ws.HandleMsgEvent(io)
 
+	ws.HandleTestEvent(io)
+
 	r.LoadHTMLGlob("public/html/*")
 	r.Static("/static/css", "./public/css")
 	r.Static("/static/js", "./public/js")
