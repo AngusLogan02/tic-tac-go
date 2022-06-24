@@ -1,21 +1,54 @@
 package game
 
-import (
-	"strconv"
-)
-
-func ValidMove(gamestate [][]string, location string, player string) bool {
-	x, _ := strconv.Atoi(location[0:1])
-	y, _ := strconv.Atoi(location[1:2])
+func Move(gamestate [][]string, x int, y int, player string) (bool, string) {
 	var valid bool
 
 	if gamestate[x][y] == "" {
 		gamestate[x][y] = player
 		valid = true
+		for i := 0; i < 3; i++ {
+			if gamestate[x][i] != player {
+				break
+			}
+			if i == 2 {
+				return valid, player
+			}
+		}
+
+		for i := 0; i < 3; i++ {
+			if gamestate[i][y] != player {
+				break
+			}
+			if i == 2 {
+				return valid, player
+			}
+		}
+
+		if x == y {
+			for i := 0; i < 3; i++ {
+				if gamestate[i][i] != player {
+					break
+				}
+				if i == 2 {
+					return valid, player
+				}
+			}
+		}
+
+		if x+y == 2 {
+			for i := 0; i < 3; i++ {
+				if gamestate[i][2-i] != player {
+					break
+				}
+				if i == 2 {
+					return valid, player
+				}
+			}
+		}
 	} else {
 		valid = false
 	}
-	return valid
+	return valid, ""
 }
 
 func InitialiseGamestate() [][]string {
@@ -24,26 +57,4 @@ func InitialiseGamestate() [][]string {
 		gamestate[i] = make([]string, 3)
 	}
 	return gamestate
-}
-
-func CheckWin(gamestate [][]string) string {
-	for i := range gamestate {
-		if gamestate[0][i] == gamestate[1][i] && gamestate[1][i] == gamestate[2][i] {
-			// row check
-			return gamestate[0][i]
-		}
-		if gamestate[i][0] == gamestate[i][1] && gamestate[i][1] == gamestate[i][2] {
-			// column check
-			return gamestate[i][0]
-		}
-	}
-	if gamestate[0][0] == gamestate[1][1] && gamestate[1][1] == gamestate[2][2] {
-		// diagonal check (\)
-		return gamestate[0][0]
-	}
-	if gamestate[0][2] == gamestate[1][1] && gamestate[1][1] == gamestate[2][0] {
-		// diagonal check (/)
-		return gamestate[0][2]
-	}
-	return ""
 }

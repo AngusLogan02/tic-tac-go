@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"strconv"
 	"tic-tac-go/game"
 
 	socketio "github.com/googollee/go-socket.io"
@@ -27,6 +28,7 @@ func HandleOnConnect(io *socketio.Server) {
 				for i := range roomList {
 					if roomList[i].roomID == roomName {
 						roomMap[s.ID()] = i
+						roomList[i].player2 = s.ID()
 						break
 					}
 				}
@@ -69,9 +71,13 @@ func HandleMove(io *socketio.Server) {
 			player = "O"
 		}
 
-		if game.ValidMove(currGame.gamestate, location, player) {
+		x, _ := strconv.Atoi(location[0:1])
+		y, _ := strconv.Atoi(location[1:2])
+
+		valid, winner := game.Move(currGame.gamestate, x, y, player)
+
+		if valid {
 			io.BroadcastToRoom("/stranger", currGame.roomID, "valid", location+player)
-			winner := game.CheckWin(currGame.gamestate)
 			if winner == "X" {
 				io.BroadcastToRoom("/stranger", currGame.roomID, "winner", currGame.player1)
 				io.ClearRoom("/stranger", currGame.roomID)
