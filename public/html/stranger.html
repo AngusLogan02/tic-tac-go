@@ -124,6 +124,16 @@
         notif.style.opacity = 100;
         subheader.innerHTML = "<a href='/''>Play Again</a>"
       });
+
+      socket.on('dc', function() {
+        for (var i=0; i < possMoves.length; i++) {
+                possMoves[i].disabled = true;
+        }
+        header.innerHTML = "opponent disconnected"
+        notif.style.zIndex = 10;
+        notif.style.opacity = 100;
+        subheader.innerHTML = "<a href='/''>Play Again</a>"
+      });
     </script>
   </body>
 </html>
