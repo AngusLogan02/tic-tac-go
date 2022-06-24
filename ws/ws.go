@@ -12,6 +12,7 @@ type room struct {
 	player1   string
 	player2   string
 	gamestate [][]string
+	movecount int
 }
 
 var roomMap = make(map[string]int)
@@ -43,6 +44,7 @@ func HandleOnConnect(io *socketio.Server) {
 				roomID:    "game" + s.ID(),
 				player1:   s.ID(),
 				gamestate: game.InitialiseGamestate(),
+				movecount: 0,
 			})
 		}
 		return nil
@@ -78,6 +80,10 @@ func HandleMove(io *socketio.Server) {
 
 		if valid {
 			io.BroadcastToRoom("/stranger", currGame.roomID, "valid", location+player)
+			roomList[roomMap[s.ID()]].movecount++
+			if roomList[roomMap[s.ID()]].movecount == 9 && winner == "" {
+				io.BroadcastToRoom("/stranger", currGame.roomID, "draw")
+			}
 			if winner == "X" {
 				io.BroadcastToRoom("/stranger", currGame.roomID, "winner", currGame.player1)
 				io.ClearRoom("/stranger", currGame.roomID)
