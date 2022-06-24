@@ -25,3 +25,25 @@ func InitialiseGamestate() [][]string {
 	}
 	return gamestate
 }
+
+func CheckWin(gamestate [][]string) string {
+	for i := range gamestate {
+		if gamestate[0][i] == gamestate[1][i] && gamestate[1][i] == gamestate[2][i] {
+			// row check
+			return gamestate[0][i]
+		}
+		if gamestate[i][0] == gamestate[i][1] && gamestate[i][1] == gamestate[i][2] {
+			// column check
+			return gamestate[i][0]
+		}
+	}
+	if gamestate[0][0] == gamestate[1][1] && gamestate[1][1] == gamestate[2][2] {
+		// diagonal check (\)
+		return gamestate[0][0]
+	}
+	if gamestate[0][2] == gamestate[1][1] && gamestate[1][1] == gamestate[2][0] {
+		// diagonal check (/)
+		return gamestate[0][2]
+	}
+	return ""
+}

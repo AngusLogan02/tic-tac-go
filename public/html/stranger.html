@@ -8,9 +8,9 @@
     <link rel="stylesheet" href="static/css/tw.css">
   </head>
   <body class="bg-neutral-800">
-    <div id="welcomeContainer" class="bg-neutral-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center rounded-xl p-2 shadow-lg transition-all duration-700">
-        <h1 id="counter" class="text-3xl italic font-semibold text-neutral-100 m-6">one of two players</h1>
-        <h2 id="startingGame" class="text-xl italic font-semibold text-neutral-100 mb-6 hidden">Starting game</h2>
+    <div id="notif" class="bg-neutral-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center rounded-xl p-2 shadow-lg transition-all duration-700">
+        <h1 id="header" class="text-3xl italic font-semibold text-neutral-100 m-6">one of two players</h1>
+        <h2 id="subheader" class="text-xl italic font-semibold text-neutral-100 mb-6 hidden">Starting game</h2>
     </div>
 
     <!-- <div id="gameBoard" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-green-500 border-2 w-1/2 after:pb-[100%] place-items-center content-center hidden"> -->
@@ -63,21 +63,21 @@
 
       var form = document.getElementById('test')
       var input = document.getElementById('testText')
-      var playerCounter = document.getElementById('counter')
-      var startingGame = document.getElementById('startingGame')
-      var welcomeContainer = document.getElementById('welcomeContainer')
+      var header = document.getElementById('header')
+      var subheader = document.getElementById('subheader')
+      var notif = document.getElementById('notif')
       var particles = document.getElementById('particles-js')
       var gameBoard = document.getElementById('gameBoard')
       var possMoves = document.getElementsByTagName('button')
       var whosMove = document.getElementById('whosMove')
 
       socket.on('gameFound', function (player1) {
-        playerCounter.innerHTML = "two of two players";
-        startingGame.style.display = "block";
+        header.innerHTML = "two of two players";
+        subheader.style.display = "block";
         
         setTimeout(function() {
           setTimeout(function() {
-            welcomeContainer.remove();
+            notif.style.zIndex = -10;
             particles.remove();
             gameBoard.style.display = "grid"
             if (socket.id == player1) {
@@ -88,7 +88,7 @@
             }
             whosMove.style.display = "block"
           }, 700);
-          welcomeContainer.style.opacity = 0; 
+          notif.style.opacity = 0; 
         }, 2000);
       });
 
@@ -109,6 +109,20 @@
           }
           whosMove.innerHTML = "opponent's move"
         }
+      });
+
+      socket.on('winner', function(player) {
+        for (var i=0; i < possMoves.length; i++) {
+                possMoves[i].disabled = true;
+        }
+        if (player == socket.id) {
+          header.innerHTML = "YOU WIN!"
+        } else {
+          header.innerHTML = "YOU LOSE!"
+        }
+        notif.style.zIndex = 10;
+        notif.style.opacity = 100;
+        subheader.innerHTML = "<a href='/''>Play Again</a>"
       });
     </script>
   </body>

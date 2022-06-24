@@ -71,6 +71,14 @@ func HandleMove(io *socketio.Server) {
 
 		if game.ValidMove(currGame.gamestate, location, player) {
 			io.BroadcastToRoom("/stranger", currGame.roomID, "valid", location+player)
+			winner := game.CheckWin(currGame.gamestate)
+			if winner == "X" {
+				io.BroadcastToRoom("/stranger", currGame.roomID, "winner", currGame.player1)
+				io.ClearRoom("/stranger", currGame.roomID)
+			} else if winner == "O" {
+				io.BroadcastToRoom("/stranger", currGame.roomID, "winner", currGame.player2)
+				io.ClearRoom("/stranger", currGame.roomID)
+			}
 		}
 	})
 }
