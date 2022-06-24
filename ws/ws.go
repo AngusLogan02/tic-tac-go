@@ -1,7 +1,6 @@
 package ws
 
 import (
-	"log"
 	"tic-tac-go/game"
 
 	socketio "github.com/googollee/go-socket.io"
@@ -44,7 +43,6 @@ func HandleOnConnect(io *socketio.Server) {
 				gamestate: game.InitialiseGamestate(),
 			})
 		}
-		log.Println(io.Rooms("/stranger"))
 		return nil
 	})
 }
@@ -55,7 +53,6 @@ func HandleOnDisconnect(io *socketio.Server) {
 
 func HandleOnDisconnectStranger(io *socketio.Server) {
 	io.OnDisconnect("/stranger", func(s socketio.Conn, reason string) {
-		log.Println(s.ID(), "disconnected from", s.Namespace(), ":", reason)
 		currGame := roomList[roomMap[s.ID()]]
 		io.BroadcastToRoom("/stranger", currGame.roomID, "dc")
 		io.ClearRoom("/stranger", currGame.roomID)

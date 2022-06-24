@@ -11,6 +11,7 @@ import (
 
 func main() {
 	r := gin.New()
+	r.Use(gin.Recovery())
 	r.SetTrustedProxies(nil)
 
 	io := socketio.NewServer(nil)
