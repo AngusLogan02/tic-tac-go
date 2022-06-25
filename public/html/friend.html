@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>IO</title>
-    <link rel="stylesheet" href="static/css/tw.css">
+    <link rel="stylesheet" href="../static/css/tw.css">
   </head>
   <body class="bg-neutral-800">
     <div id="notif" class="bg-neutral-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center rounded-xl p-2 shadow-lg transition-all duration-700">
         <h1 id="header" class="text-3xl italic font-semibold text-neutral-100 m-6">one of two players</h1>
-        <h2 id="subheader" class="text-xl italic font-semibold text-neutral-100 mb-6 hidden">Starting game</h2>
+        <h2 id="subheader" class="text-xl italic font-semibold text-neutral-100 mb-6">send the link to your friend</h2>
     </div>
 
     <!-- <div id="gameBoard" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-green-500 border-2 w-1/2 after:pb-[100%] place-items-center content-center hidden"> -->
@@ -55,12 +55,12 @@
     <div id="whosMove" class="text-3xl absolute w-full text-center mt-6 text-neutral-100 hidden">opponent's move</div>
 
     <div id="particles-js"></div>
-	  <script src="static/js/particles.min.js"></script>
-    <script src="static/js/app.js"></script>
+	  <script src="../static/js/particles.min.js"></script>
+    <script src="../static/js/app.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.4/socket.io.min.js" integrity="sha512-qXjK7fRhV6plK/Vpaknn+5Fe0dXhJqdbiQKpLghl0XKir10zEEzSNqheA1MY7nh9H8cu7giAYTibHTBvt37PQg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
-      var input = io("/stranger")
       var output = io()
+      var input = io("/friend")
 
       var header = document.getElementById('header')
       var subheader = document.getElementById('subheader')
@@ -70,8 +70,13 @@
       var possMoves = document.getElementsByTagName('button')
       var whosMove = document.getElementById('whosMove')
 
+      input.on('connect', function() {
+        input.emit("friendID", {{ .friendID }})
+      });      
+
       input.on('gameFound', function (player1) {
         header.innerHTML = "two of two players";
+        subheader.innerHTML = "starting game"
         subheader.style.display = "block";
         
         setTimeout(function() {
@@ -143,6 +148,17 @@
         notif.style.zIndex = 10;
         notif.style.opacity = 100;
         subheader.innerHTML = "<a href='/'>Play Again</a>"
+      });
+      
+      output.on('gameFull', function(id) {
+        console.log("game full received")
+        if (id == input.id) {
+          console.log("game full if triggered")
+          header.innerHTML = "game full"
+          notif.style.zIndex = 10;
+          notif.style.opacity = 100;
+          subheader.innerHTML = "<a href='/'>Go Back</a>"
+        }
       });
     </script>
   </body>

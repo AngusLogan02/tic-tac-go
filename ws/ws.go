@@ -9,6 +9,7 @@ import (
 
 type room struct {
 	roomID    string
+	namespace string
 	player1   string
 	player2   string
 	gamestate [][]string
@@ -18,7 +19,7 @@ type room struct {
 var roomMap = make(map[string]int)
 var roomList []room
 
-func HandleOnConnect(io *socketio.Server) {
+func HandleStrangerConnect(io *socketio.Server) {
 	io.OnConnect("/stranger", func(s socketio.Conn) error {
 		s.Leave(s.ID())
 
@@ -42,6 +43,7 @@ func HandleOnConnect(io *socketio.Server) {
 			roomMap[s.ID()] = len(roomList)
 			roomList = append(roomList, room{
 				roomID:    "game" + s.ID(),
+				namespace: "/stranger",
 				player1:   s.ID(),
 				gamestate: game.InitialiseGamestate(),
 				movecount: 0,
@@ -51,20 +53,54 @@ func HandleOnConnect(io *socketio.Server) {
 	})
 }
 
-func HandleOnDisconnect(io *socketio.Server) {
-	io.OnDisconnect("/", func(s socketio.Conn, reason string) {})
+func HandleFriendConnect(io *socketio.Server) {
+	io.OnConnect("/friend", func(s socketio.Conn) error {
+		// s.Leave(s.ID())
+		return nil
+	})
 }
 
-func HandleOnDisconnectStranger(io *socketio.Server) {
-	io.OnDisconnect("/stranger", func(s socketio.Conn, reason string) {
+func OnReceiveFriendID(io *socketio.Server) {
+	io.OnEvent("/friend", "friendID", func(s socketio.Conn, friendID string) {
+		if io.RoomLen("/friend", friendID) == 0 {
+			s.Join(friendID)
+			roomMap[s.ID()] = len(roomList)
+			roomList = append(roomList, room{
+				roomID:    friendID,
+				namespace: "/friend",
+				player1:   s.ID(),
+				gamestate: game.InitialiseGamestate(),
+				movecount: 0,
+			})
+			return
+		} else if io.RoomLen("/friend", friendID) == 1 {
+			s.Join(friendID)
+			for i := range roomList {
+				if roomList[i].roomID == friendID {
+					roomMap[s.ID()] = i
+					roomList[i].player2 = s.ID()
+					break
+				}
+			}
+			io.BroadcastToRoom("/friend", friendID, "gameFound", roomList[roomMap[s.ID()]].player1)
+			return
+		} else {
+			io.BroadcastToNamespace("/", "gameFull", s.ID())
+			delete(roomMap, s.ID())
+		}
+	})
+}
+
+func HandleDisconnect(io *socketio.Server) {
+	io.OnDisconnect("/", func(s socketio.Conn, reason string) {
 		currGame := roomList[roomMap[s.ID()]]
-		io.BroadcastToRoom("/stranger", currGame.roomID, "dc")
-		io.ClearRoom("/stranger", currGame.roomID)
+		io.BroadcastToRoom(currGame.namespace, currGame.roomID, "dc")
+		io.ClearRoom(currGame.namespace, currGame.roomID)
 	})
 }
 
 func HandleMove(io *socketio.Server) {
-	io.OnEvent("/stranger", "move", func(s socketio.Conn, location string) {
+	io.OnEvent("/", "move", func(s socketio.Conn, location string) {
 		currGame := roomList[roomMap[s.ID()]]
 		var player string
 		if s.ID() == currGame.player1 {
@@ -79,17 +115,17 @@ func HandleMove(io *socketio.Server) {
 		valid, winner := game.Move(currGame.gamestate, x, y, player)
 
 		if valid {
-			io.BroadcastToRoom("/stranger", currGame.roomID, "valid", location+player)
+			io.BroadcastToRoom(currGame.namespace, currGame.roomID, "valid", location+player)
 			roomList[roomMap[s.ID()]].movecount++
 			if roomList[roomMap[s.ID()]].movecount == 9 && winner == "" {
-				io.BroadcastToRoom("/stranger", currGame.roomID, "draw")
+				io.BroadcastToRoom(currGame.namespace, currGame.roomID, "draw")
 			}
 			if winner == "X" {
-				io.BroadcastToRoom("/stranger", currGame.roomID, "winner", currGame.player1)
-				io.ClearRoom("/stranger", currGame.roomID)
+				io.BroadcastToRoom(currGame.namespace, currGame.roomID, "winner", currGame.player1)
+				io.ClearRoom(currGame.namespace, currGame.roomID)
 			} else if winner == "O" {
-				io.BroadcastToRoom("/stranger", currGame.roomID, "winner", currGame.player2)
-				io.ClearRoom("/stranger", currGame.roomID)
+				io.BroadcastToRoom(currGame.namespace, currGame.roomID, "winner", currGame.player2)
+				io.ClearRoom(currGame.namespace, currGame.roomID)
 			}
 		}
 	})

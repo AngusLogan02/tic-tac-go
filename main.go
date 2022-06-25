@@ -16,9 +16,10 @@ func main() {
 
 	io := socketio.NewServer(nil)
 
-	ws.HandleOnConnect(io)
-	ws.HandleOnDisconnect(io)
-	ws.HandleOnDisconnectStranger(io)
+	ws.HandleFriendConnect(io)
+	ws.OnReceiveFriendID(io)
+	ws.HandleStrangerConnect(io)
+	ws.HandleDisconnect(io)
 	ws.HandleMove(io)
 
 	r.LoadHTMLGlob("public/html/*")
@@ -26,6 +27,7 @@ func main() {
 	r.Static("/static/js", "./public/js")
 
 	r.GET("/", handlers.IndexHandler)
+	r.GET("/friend/:friendID", handlers.FriendHandler)
 	r.GET("/stranger", handlers.StrangerHandler)
 
 	r.GET("/socket.io/*any", gin.WrapH(io))

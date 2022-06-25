@@ -6,11 +6,14 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Tic-Tac-Go</title>
     <link rel="stylesheet" href="static/css/tw.css">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   </head>
   <body class="">
     <div class="bg-neutral-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center rounded-xl p-2 shadow-lg pb-10">
         <h1 class="text-3xl italic font-semibold text-neutral-100 mb-8 mt-6">Tic-Tac-Go</h1>
-        <a class="text-neutral-100 rounded-xl p-4 bg-neutral-400 hover:bg-neutral-600 transition-all duration-500 mr-6 ml-6 shadow-lg" href="/friend">Play a Friend</a>
+        <a class="text-neutral-100 rounded-xl p-4 bg-neutral-400 hover:bg-neutral-600 transition-all duration-500 mr-6 ml-6 shadow-lg" href="/friend/{{ .roomLink }}">Play a Friend</a>
         <a class="text-neutral-100 rounded-xl p-4 bg-neutral-400 hover:bg-neutral-600 transition-all duration-500 mr-6 ml-6 shadow-lg" href="/stranger">Play a Stranger</a>
     </div>
 
