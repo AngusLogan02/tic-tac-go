@@ -98,7 +98,6 @@
 
       function move(location) {
         output.emit("move", location);
-        console.log(location)
       }
 
       input.on('valid', function(validMove) {
@@ -151,9 +150,7 @@
       });
       
       output.on('gameFull', function(id) {
-        console.log("game full received")
         if (id == input.id) {
-          console.log("game full if triggered")
           header.innerHTML = "game full"
           notif.style.zIndex = 10;
           notif.style.opacity = 100;
